@@ -18,6 +18,9 @@ function App() {
     return json.slice(0, 10);
   };
 
+  const [isLoading, setIsLoading] = useState(false);
+  const [stories, setStories] = useState<Story[]>([]);
+
   const fetchStories = async (ids: string[]) => {
     try {
       const promises = ids.map(async (id) => {
@@ -41,13 +44,13 @@ function App() {
     }
   };
 
-  const [stories, setStories] = useState<Story[]>([]);
-
   useEffect(() => {
     const loadTop10Stories = async () => {
+      setIsLoading(true);
       const ids = await fetchIds(url);
       const data = await fetchStories(ids);
       setStories(data);
+      setIsLoading(false);
     };
     loadTop10Stories();
   }, []);
@@ -55,14 +58,16 @@ function App() {
   return (
     <div>
       <ul>
-        {stories.map((story) => (
-          <li key={story.id}>
-            <a href={story.url}>{story.title}</a>
-            <p>
-              {story.score} by {story.by}
-            </p>
-          </li>
-        ))}
+        {isLoading && <div>Loading...</div>}
+        {!isLoading &&
+          stories.map((story) => (
+            <li key={story.id}>
+              <a href={story.url}>{story.title}</a>
+              <p>
+                {story.score} by {story.by}
+              </p>
+            </li>
+          ))}
       </ul>
     </div>
   );
