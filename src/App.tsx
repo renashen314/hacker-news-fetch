@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 
 type Story = {
+  id: number;
   score: string;
   title: string;
   url: string;
@@ -26,6 +27,7 @@ function App() {
       const data = await Promise.all(promises);
       const stories = data.map((d) => {
         return {
+          id: d.id,
           score: d.score,
           title: d.title,
           url: d.url,
@@ -42,22 +44,22 @@ function App() {
   const [stories, setStories] = useState<Story[]>([]);
 
   useEffect(() => {
-    const load = async () => {
+    const loadTop10Stories = async () => {
       const ids = await fetchIds(url);
       const data = await fetchStories(ids);
       setStories(data);
     };
-    load();
+    loadTop10Stories();
   }, []);
 
   return (
     <div>
       <ul>
-        {stories.map((s, i) => (
-          <li key={i}>
-            <a href={s.url}>{s.title}</a>
+        {stories.map((story) => (
+          <li key={story.id}>
+            <a href={story.url}>{story.title}</a>
             <p>
-              {s.score} by {s.by}
+              {story.score} by {story.by}
             </p>
           </li>
         ))}
